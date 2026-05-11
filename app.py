@@ -306,9 +306,6 @@ def too_large(_):
 # 入口
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    print("=" * 60)
-    print(" 开票汇总助手 - 后端服务")
-    print(" 默认地址: http://127.0.0.1:5000")
-    print(" 健康检查: http://127.0.0.1:5000/api/health")
-    print("=" * 60)
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    port = int(os.environ.get("PORT", 5000))  # Render 会提供 PORT 环境变量
+    app.run(host="0.0.0.0", port=port)
+    
