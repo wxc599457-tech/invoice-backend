@@ -46,12 +46,21 @@ def upload_file():
 
 @app.route("/api/download", methods=["GET"])
 def download_file():
-    output_file = os.path.join(os.getcwd(), "output", "汇总结果.xlsx")
+    # 拼接输出文件路径
+    output_folder = os.path.join(os.getcwd(), "output")
+    output_file = os.path.join(output_folder, "汇总结果.xlsx")
+
+    # 如果文件不存在，返回 404
     if not os.path.exists(output_file):
         return jsonify({"success": False, "message": "File not found"}), 404
-    return send_file(output_file, as_attachment=True, download_name="汇总结果.xlsx",
-                     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
+    # 使用 send_file 返回文件
+    return send_file(
+        output_file,
+        as_attachment=True,
+        download_name="汇总结果.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        
 # ----------------------------
 # 不要写 app.run()
 # ----------------------------
