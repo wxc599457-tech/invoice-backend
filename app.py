@@ -44,23 +44,40 @@ def upload_file():
     file.save(filepath)
     return jsonify({"success": True, "filename": file.filename})
 
+import os
+from flask import send_file, jsonify
+from urllib.parse import quote  # 用于中文文件名编码
+
 @app.route("/api/download", methods=["GET"])
 def download_file():
-    # 拼接输出文件路径
+    """
+    下载汇总结果文件，适配 Render / Gunicorn，支持中文文件名
+    """
+    # 拼接输出文件夹路径（绝对路径）
     output_folder = os.path.join(os.getcwd(), "output")
+    os.makedirs(output_folder, exist_ok=True)
+
+    # 输出文件路径
     output_file = os.path.join(output_folder, "汇总结果.xlsx")
 
     # 如果文件不存在，返回 404
     if not os.path.exists(output_file):
         return jsonify({"success": False, "message": "File not found"}), 404
 
-    # 使用 send_file 返回文件
+    # 中文文件名编码，确保在 Linux / 浏览器都能正确下载
+    download_name = "汇总结果.xlsx"
+    try:
+        quoted_name = quote(download_name)
+    except:
+        quoted_name = download_name
+
+    # 返回文件
     return send_file(
         output_file,
         as_attachment=True,
-        download_name="汇总结果.xlsx",
+        download_name=quoted_name,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        
+
 # ----------------------------
 # 不要写 app.run()
 # ----------------------------
